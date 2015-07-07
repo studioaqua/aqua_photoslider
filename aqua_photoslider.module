@@ -285,8 +285,7 @@ function theme_aqua_photoslider_image_gallery($variables)
     $html_photoslider .= $aqua_pager;
   }
 
-  // Return the preview image as a link to the larger image with a cloud-zoom
-  // CSS class.
+  // Return the preview image
   return '<div class="aqua-photoslider-container">' . $html_photoslider . '</div>';
 }
 

@@ -1,6 +1,6 @@
 Aqua Photo Slider
 
-Module’s description
+This is a simple photo slider for product pages.
 
 -----------------------------------------------
 Change log

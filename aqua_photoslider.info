@@ -1,5 +1,5 @@
 name = Aqua Photo Slider
-description = Module's descroiption
+description = This is a simple photo slider for product pages.
 package = Aqua
 core = 7.x
 dependencies[] = libraries

@@ -5,29 +5,6 @@
  */
 
 /**
- * Implements hook_install().
- */
-function aqua_photoslider_install()
-{
-}
-
-
-/**
- * Implements hook_disable().
- */
-function aqua_photoslider_disable()
-{
-}
-
-
-/**
- * Implements hook_uninstall().
- */
-function aqua_photoslider_uninstall()
-{
-}
-
-/**
  * Implements hook_requirements().
  */
 function aqua_photoslider_requirements($phase) {
