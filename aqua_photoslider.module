@@ -13,7 +13,7 @@ define('BXSLIDER_DOWNLOAD_URI', 'http://bxslider.com/lib/jquery.bxslider.zip');
 /**
  * Implements hook_libraries_info().
  */
-function cloud_zoom_libraries_info()
+function aqua_photoslider_libraries_info()
 {
   $libraries['bxslider'] = array(
     'name' => 'Bxslider',
