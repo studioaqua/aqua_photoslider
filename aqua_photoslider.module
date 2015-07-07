@@ -1,0 +1,292 @@
+<?php
+/**
+ * @author
+ * Roberto Peruzzo <roberto.peruzzo@studioaqua.it>
+ *
+ * @file
+ * aqua_module.module
+ *
+ */
+
+define('BXSLIDER_DOWNLOAD_URI', 'http://bxslider.com/lib/jquery.bxslider.zip');
+
+/**
+ * Implements hook_libraries_info().
+ */
+function cloud_zoom_libraries_info()
+{
+  $libraries['bxslider'] = array(
+    'name' => 'Bxslider',
+    'vendor url' => 'http://bxslider.com/',
+    'download url' => BXSLIDER_DOWNLOAD_URI,
+  );
+  return $libraries;
+}
+
+/**
+ * Implements hook_library().
+ */
+function aqua_photoslider_library()
+{
+  $libraries['bxslider'] = array(
+    'title' => 'Bxslider',
+    'website' => 'http://bxslider.com/',
+    'version' => '4.1',
+    'css' => array(
+      libraries_get_path('jquery.bxslider') . '/jquery.bxslider.css' => array(),
+    ),
+    'js' => array(
+      libraries_get_path('jquery.bxslider') . '/jquery.bxslider.min.js' => array(),
+    ),
+  );
+  return $libraries;
+}
+
+/**
+ * Get all Aqua Photoslider settings info.
+ *
+ * Array keyed with Aqua Photoslider's option name, and array of values:
+ * - title: The human readable name of the option.
+ * - id: The Aqua Photoslider option ID. If FALSE it means it should not be added to
+ *   the "rel" in the HTML.
+ * - description: Settings description.
+ * - default_value - Default value of setting.
+ * - form_type - The form element type displayed in the settings page.
+ *
+ */
+function aqua_photoslider_settings_info()
+{
+  $settings = array(
+    'slide_style' => array(
+      'title' => t('Slide image style'),
+      'id' => FALSE,
+      'description' => '',
+      'default_value' =>  0,
+      'form_type' => 'select',
+    ),
+    'thumb_style' => array(
+      'title' => t('Thumbnail image style'),
+      'id' => FALSE,
+      'description' => '',
+      'default_value' =>  0,
+      'form_type' => 'select',
+    ),
+  );
+
+  return $settings;
+}
+
+/**
+ * Implements hook_field_formatter_info()
+ */
+function aqua_photoslider_field_formatter_info()
+{
+  $formatters = array();
+
+
+  $aqua_photoslider_settings = aqua_photoslider_settings_info();
+  $default_settings = array();
+  // Return a single depth array with the given key as value.
+  foreach ($aqua_photoslider_settings as $key => $setting)
+  {
+    $default_settings[$key] = $setting['default_value'];
+  }
+
+  $formatters['aqua_photoslider'] = array(
+    'label' => t('Aqua Photo Slider'),
+    'field types' => array('image'),
+    'settings' => $default_settings,
+  );
+
+  return $formatters;
+}
+
+/**
+ * Implements hook_field_formatter_settings_form().
+ */
+function aqua_photoslider_field_formatter_settings_form($field, $instance, $view_mode)
+{
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+
+  $form = array();
+
+  // Get a list of all style names for our form options.
+  $options = array(t('None (original image)'),);
+  foreach (image_styles() as $id => $style)
+  {
+     $options[$id] = $id;
+  }
+
+  $aqua_photoslider_settings = aqua_photoslider_settings_info();
+
+  foreach ($aqua_photoslider_settings as $key => $form_element)
+  {
+    $form_settings = array(
+      '#type' => $form_element['form_type'],
+      '#title' => $form_element['title'],
+      '#default_value' => $settings[$key],
+      '#description' => $form_element['description'],
+    );
+
+    // Get the right option for select list.
+    if ($form_element['form_type'] == 'select')
+    {
+      if (isset($form_element['options']))
+      {
+         $form_settings['#options'] = $form_element['options'];
+      }
+      else
+      {
+         $form_settings['#options'] =  $options;
+      }
+    }
+
+    // Add element to fieldset or to main form.
+    $form[$key] = $form_settings;
+  }
+  return $form;
+}
+
+/**
+ * Implements hook_field_formatter_settings_summary().
+ */
+function aqua_photoslider_field_formatter_settings_summary($field, $instance, $view_mode)
+{
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+
+  $aqua_photoslider_settings = aqua_photoslider_settings_info();
+  $summary = array();
+  foreach ($aqua_photoslider_settings as $key => $info)
+  {
+    $summary_info = empty($settings[$key]) ? $info['default_value'] : $settings[$key];
+    $title = $info['title'] . ' : ';
+    $summary[] = $title .  $summary_info;
+  }
+
+  return implode ('<br />', $summary);
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function aqua_photoslider_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display)
+{
+  $element = array();
+  $settings = $display['settings']; // get the settings
+
+  $aqua_photoslider_settings = aqua_photoslider_settings_info();
+  $variables = array();
+  foreach ($aqua_photoslider_settings as $key => $info)
+  {
+    $variables['#' . $key] = $settings[$key];
+  }
+  $element = array(
+    '#theme' => 'aqua_photoslider_image_gallery',
+    '#items' => $items,
+  );
+  $element += $variables;
+
+  return $element;
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function aqua_photoslider_theme()
+{
+  $theme_info = array(
+    'aqua_photoslider_image_gallery' => array(
+      'variables' => array(
+        'items' => 0,
+      ),
+    ),
+  );
+
+  // Pass default settings values.
+  $aqua_photoslider_settings = aqua_photoslider_settings_info();
+  $theme_info['aqua_photoslider_image_gallery']['variables'] +=  $aqua_photoslider_settings;
+
+  return $theme_info;
+}
+
+/**
+ * Get rendered img tag.
+ */
+function _aqua_photoslider_get_img_tag($style_name, $item)
+{
+  $image = array(
+    'path' => $item['uri'],
+    'alt' => $item['alt'],
+    'style_name' => $style_name,
+  );
+
+  // Do not output an empty 'title' attribute.
+  if (!empty($item['title']))
+  {
+    $image['title'] = $item['title'];
+  }
+
+  return !empty($style_name) ? theme('image_style', $image) : theme('image', $image);
+}
+
+
+/**
+ * Theme handler for the Aqua PhotoSlider effect with gallery
+ */
+function theme_aqua_photoslider_image_gallery($variables)
+{
+  // Add the Bxslider Library
+  drupal_add_library('aqua_photoslider', 'bxslider');
+  // Add Aqua PhotoSlider css
+  drupal_add_css(drupal_get_path('module', 'aqua_photoslider') . '/css/aqua_photoslider.css');
+  // Add Aqua PhotoSlider js
+  drupal_add_js(drupal_get_path('module', 'aqua_photoslider') . '/js/aqua_photoslider.js');
+
+  $items = $variables['items'];
+
+  // Create the thumbs pager syntax of aqua photoslider.
+  $aqua_slider = '<ul class="aqua-photoslider">';
+  $aqua_pager = '<nav id="aqua-photoslider-thumbs-pager"><ul>';
+  $main_item = '';
+
+  foreach ($items as $delta => $item)
+  {
+    // Build images.
+    //$zoomed = $variables['zoom_style'] ? image_style_url($variables['zoom_style'], $item['uri']) : file_create_url($item['uri']);
+    $slide = _aqua_photoslider_get_img_tag($variables['slide_style'], $item);
+    $thumb = _aqua_photoslider_get_img_tag($variables['thumb_style'], $item);
+
+    $slide_url = file_create_url($item['uri']);
+    //$thumb_url = image_style_url('thumbnail', $item['uri']);
+
+    // These are the slides.
+    $aqua_slider .= '<li>' . $slide . '</li>';
+
+
+    // These are the thumbnail.
+    $options = array(
+      'html' => TRUE,
+      'attributes' => array(
+        'data-slide-index' => $delta,
+      ),
+    );
+    $aqua_pager .= '<li>' . l($thumb, $slide_url, $options) . '</li>';
+  }
+  $aqua_pager .= '</ul></nav>';
+  $aqua_slider .= '</ul>';
+
+  $html_photoslider = $aqua_slider;
+
+  // If the photo gallery has one item only, don't show the pager.
+  if (sizeof($items) > 1)
+  {
+    $html_photoslider .= $aqua_pager;
+  }
+
+  // Return the preview image as a link to the larger image with a cloud-zoom
+  // CSS class.
+  return '<div class="aqua-photoslider-container">' . $html_photoslider . '</div>';
+}
+

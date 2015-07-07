@@ -1,0 +1,8 @@
+ This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 Unported License.
+ To view a copy of this license, visit http://creativecommons.org/licenses/by-nc/3.0/
+ or send a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
+
+ You are free to use this plugin for your personal or non-profit website projects.
+ You can get the author's permission to use this plugin for commercial websites by paying a fee.
+
+ Copyright 2014 Studio Aqua - info@studioaqua.it

@@ -1,0 +1,5 @@
+name = Aqua Photo Slider
+description = Module's descroiption
+package = Aqua
+core = 7.x
+dependencies[] = libraries

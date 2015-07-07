@@ -1,0 +1,21 @@
+.aqua-photoslider,
+#aqua-photoslider-thumbs-pager ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+.aqua-photoslider li > img {
+  width: 100%;
+  height: auto;
+}
+#aqua-photoslider-thumbs-pager {
+  display: inline-block;
+}
+#aqua-photoslider-thumbs-pager ul > li
+{
+  margin: 0 15px 15px 0;
+  float: left;
+}
+#aqua-photoslider-thumbs-pager ul > li img {
+  margin: 0 auto;
+}
